@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@syncfusion/ej2-react-gantt": "^29.2.5",
+    "@syncfusion/ej2-react-grids": "^29.2.5",
+    "@syncfusion/ej2-react-kanban": "^29.2.4",
+    "@syncfusion/ej2-react-spreadsheet": "^29.2.5"
+  }
+}

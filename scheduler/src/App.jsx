@@ -1,75 +1,44 @@
-import * as ReactDOM from 'react-dom';
-import * as React from 'react';
-import { ScheduleComponent, ViewsDirective, ViewDirective, ResourcesDirective, ResourceDirective, TimelineMonth, TimelineYear, Resize, DragAndDrop, Inject } from '@syncfusion/ej2-react-schedule';
+import { useState } from 'react';
+import SchedulerView from './components/SchedulerView';
+import GanttView from './components/GanttView';
+import KanbanView from './components/KanbanView';
+import DataGridView from './components/DataGridView';
+import SpreadsheetView from './components/SpreadsheetView';
 
 const App = () => {
-  const generateStaticEvents = (start, resCount, overlapCount) => {
-    let data = [];
-    let id = 1;
-    for (let i = 0; i < resCount; i++) {
-      let randomCollection = [];
-      let random = 0;
-      for (let j = 0; j < overlapCount; j++) {
-        random = Math.floor(Math.random() * (30));
-        random = (random === 0) ? 1 : random;
-        if (randomCollection.indexOf(random) !== -1 || randomCollection.indexOf(random + 2) !== -1 ||
-          randomCollection.indexOf(random - 2) !== -1) {
-          random += (Math.max.apply(null, randomCollection) + 10);
-        }
-        for (let k = 1; k <= 2; k++) {
-          randomCollection.push(random + k);
-        }
-        let startDate = new Date(start.getFullYear(), start.getMonth(), random);
-        startDate = new Date(startDate.getTime() + (((random % 10) * 10) * (1000 * 60)));
-        let endDate = new Date(startDate.getTime() + ((1440 + 30) * (1000 * 60)));
-        data.push({
-          Id: id,
-          Subject: 'Event #' + id,
-          StartTime: startDate,
-          EndTime: endDate,
-          IsAllDay: (id % 50) ? false : true,
-          ResourceId: i + 1
-        });
-        id++;
-      }
-    }
-    return data;
-  };
-
-  const eventSettings = { dataSource: generateStaticEvents(new Date(2025, 4, 1), 100000, 12) };
-  const group = { resources: ['Resources'] };
-
-  const generateResourceData = (startId, endId, text) => {
-    let data = [];
-    let colors = [
-      '#ff8787', '#9775fa', '#748ffc', '#3bc9db', '#69db7c',
-      '#fdd835', '#748ffc', '#9775fa', '#df5286', '#7fa900',
-      '#fec200', '#5978ee', '#00bdae', '#ea80fc'
-    ];
-    for (let a = startId; a <= endId; a++) {
-      let n = Math.floor(Math.random() * colors.length);
-      data.push({
-        Id: a,
-        Text: text + ' ' + a,
-        Color: colors[n]
-      });
-    }
-    return data;
-  };
+  const [view, setView] = useState('Scheduler');
+  const [recordCount, setRecordCount] = useState(5000);
 
   return (
-    <div>
-      <ScheduleComponent cssClass='virtual-scrolling' width='100%' height='100vh' selectedDate={new Date(2025, 4, 1)} eventSettings={eventSettings} group={group}>
-        <ResourcesDirective>
-          <ResourceDirective field='ResourceId' title='Resource' name='Resources' allowMultiple={true} dataSource={generateResourceData(1, 10000, 'Resource')} textField='Text' idField='Id' colorField='Color'>
-          </ResourceDirective>
-        </ResourcesDirective>
-        <ViewsDirective>
-          <ViewDirective option='TimelineMonth' allowVirtualScrolling={true} isSelected={true} />
-          <ViewDirective option='TimelineYear' orientation='Vertical' allowVirtualScrolling={true} />
-        </ViewsDirective>
-        <Inject services={[TimelineMonth, TimelineYear, Resize, DragAndDrop]} />
-      </ScheduleComponent>
+    <div style={{ padding: '1rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
+        <label>
+          Select View:
+          <select value={view} onChange={(e) => setView(e.target.value)}>
+            <option value="Scheduler">Scheduler</option>
+            <option value="Gantt">Gantt</option>
+            <option value="Kanban">Kanban</option>
+            <option value="DataGrid">Data Grid</option>
+            <option value="Spreadsheet">Spreadsheet</option>
+          </select>
+        </label>
+        <label style={{ marginLeft: '1rem' }}>
+          Records:
+          <input
+            type="number"
+            min="1"
+            value={recordCount}
+            onChange={(e) => setRecordCount(parseInt(e.target.value))}
+            style={{ marginLeft: '0.5rem', width: '100px' }}
+          />
+        </label>
+      </div>
+
+      {view === 'Scheduler' && <SchedulerView count={recordCount} />}
+      {view === 'Gantt' && <GanttView count={recordCount} />}
+      {view === 'Kanban' && <KanbanView count={recordCount} />}
+      {view === 'DataGrid' && <DataGridView count={recordCount} />}
+      {view === 'Spreadsheet' && <SpreadsheetView count={recordCount} />}
     </div>
   );
 };
